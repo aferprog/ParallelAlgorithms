@@ -16,6 +16,7 @@ static void work(MultyThreadEngine* mte) {
 			mte->tasks.pop();
 		}
 		task();
+		mte->wait_cv.notify_all();
 	}
 }
 void MultyThreadEngine::addTask(std::function<void()> task) {
@@ -27,11 +28,9 @@ void MultyThreadEngine::addTask(std::function<void()> task) {
 }
 
 bool MultyThreadEngine::shouldFinish() const {
-	// std::lock_guard<std::mutex> lock(queue_mutex);
 	return bShouldFinish.load();
 }
 bool MultyThreadEngine::shouldStop() const {
-	// std::lock_guard<std::mutex> lock(queue_mutex);
 	return bShouldStop.load();
 }
 
@@ -42,9 +41,20 @@ void MultyThreadEngine::stop()
 	cv.notify_all();
 }
 
+void MultyThreadEngine::wait()
+{
+	std::unique_lock lock(wait_mutex);
+	wait_cv.wait(lock, [this]() { return this->getTasksCount() == 0; });
+}
+
 size_t MultyThreadEngine::getTasksCount() const {
 	std::lock_guard lock(queue_mutex);
 	return tasks.size();
+}
+
+size_t MultyThreadEngine::getThreadsCount() const
+{
+	return threads.size();
 }
 
 MultyThreadEngine::MultyThreadEngine()

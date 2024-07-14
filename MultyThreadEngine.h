@@ -22,11 +22,16 @@ class MultyThreadEngine
 	std::atomic_bool bShouldFinish = false, bShouldStop = false;
 	std::condition_variable_any cv;
 
+	mutable std::mutex wait_mutex;
+	std::condition_variable wait_cv;
+
 public:
 	size_t getTasksCount() const;
+	size_t getThreadsCount() const;
 	bool shouldFinish() const;
 	bool shouldStop() const;
 	void stop();
+	void wait();
 	void addTask(std::function<void()> task);
 	MultyThreadEngine();
 	MultyThreadEngine(unsigned int threads_count);

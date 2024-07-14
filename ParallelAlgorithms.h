@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <functional>
+#include "MultyThreadEngine.h"
 
 #define MIN_SUBARRAY_SIZE 10000llu
 
@@ -59,14 +60,77 @@ namespace pal
 	template<typename RandIt, typename PairFunc>
 	void make_by_pair(RandIt begin, RandIt end, PairFunc action, unsigned int threads_count = 0);
 	
-	/*template<typename TestFunc, typename CheckFunc>
-	double test_function(TestFunc testFunc, CheckFunc checkFunc, unsigned int threads_count = 0);*/
+	template<typename GeneratorFunc, typename TestFunc, typename CheckFunc>
+	double test_function(GeneratorFunc genFunc, TestFunc testFunc, CheckFunc checkFunc, unsigned int count_of_tests, unsigned int threads_count = 1);
 };
 
-//template<typename TestFunc, typename CheckFunc>
-//double pal::test_function(TestFunc testFunc, CheckFunc checkFunc, unsigned int threads_count) {
-//	
-//}
+template<typename ResultType, typename GeneratorFunc, typename TestFunc, typename CheckFunc>
+static void test_perform(ResultType& general_duration, GeneratorFunc genFunc, TestFunc testFunc, CheckFunc checkFunc, unsigned int count_of_tests) {
+	for (size_t i = 0; i < count_of_tests; ++i) {
+		if constexpr (std::is_same_v<GeneratorFunc, std::nullptr_t> && std::is_same_v<CheckFunc, std::nullptr_t>) {
+			const auto start = std::chrono::high_resolution_clock::now();
+			testFunc();
+			const auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> duration = end - start;
+			general_duration += duration.count();
+		}
+		else if constexpr (!std::is_same_v<GeneratorFunc, std::nullptr_t> && !std::is_same_v<CheckFunc, std::nullptr_t>) {
+			auto data = genFunc();
+			const auto start = std::chrono::high_resolution_clock::now();
+			auto res = testFunc(data);
+			const auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> duration = end - start;
+			general_duration += duration.count();
+			checkFunc(data, res);
+		}
+		else if constexpr (!std::is_same_v<GeneratorFunc, std::nullptr_t>) {
+			auto data = genFunc();
+			const auto start = std::chrono::high_resolution_clock::now();
+			testFunc(data);
+			const auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> duration = end - start;
+			general_duration += duration.count();
+		}
+		else {
+			const auto start = std::chrono::high_resolution_clock::now();
+			auto res = testFunc();
+			const auto end = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> duration = end - start;
+			general_duration += duration.count();
+			checkFunc(res);
+		}
+	}
+}
+
+template<typename GeneratorFunc, typename TestFunc, typename CheckFunc>
+double pal::test_function(GeneratorFunc genFunc, TestFunc testFunc, CheckFunc checkFunc, unsigned int count_of_tests, unsigned int threads_count) {
+	if (threads_count == 0)
+		threads_count = std::thread::hardware_concurrency();
+	threads_count = std::min({ std::thread::hardware_concurrency(), threads_count , count_of_tests });
+	const unsigned int thc = threads_count == 0 ? 1 : threads_count;
+
+	if (thc > 1) {
+		MultyThreadEngine mte(thc);
+		std::atomic<double> general_duration(0.);
+		auto task = [&general_duration](GeneratorFunc genFunc, TestFunc testFunc, CheckFunc checkFunc, unsigned int count_of_tests) {
+			test_perform(general_duration, genFunc, testFunc, checkFunc, count_of_tests);
+		};
+		for (size_t i = 0; i < thc-1; ++i) {
+			mte.addTask([task, genFunc, testFunc, checkFunc, count_of_tests , thc]() {
+				task(genFunc, testFunc, checkFunc, count_of_tests / thc);
+				});
+		}
+		mte.addTask([task, genFunc, testFunc, checkFunc, count_of_tests, thc]() {
+			task(genFunc, testFunc, checkFunc, count_of_tests / thc + count_of_tests % thc);
+			});
+		mte.wait();
+		return general_duration.load()/count_of_tests;
+	}
+
+	double general_duration = 0.;
+	test_perform(general_duration, genFunc, testFunc, checkFunc, count_of_tests);
+	return general_duration / count_of_tests;
+}
 
 template<typename RandIt, typename PairFunc>
 void pal::make_by_pair(RandIt begin, RandIt end, PairFunc action, unsigned int threads_count) {
