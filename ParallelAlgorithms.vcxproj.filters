@@ -18,12 +18,15 @@
     <ClCompile Include="ParallelAlgorithms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MultyThreadEngine.cpp">
+    <ClCompile Include="MultiThreadEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MultyThreadEngine.h">
+    <ClInclude Include="MultiThreadEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Devider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

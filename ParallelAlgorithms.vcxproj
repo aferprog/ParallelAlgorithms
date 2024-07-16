@@ -128,11 +128,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MultyThreadEngine.cpp" />
+    <ClCompile Include="MultiThreadEngine.cpp" />
     <ClCompile Include="ParallelAlgorithms.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MultyThreadEngine.h" />
+    <ClInclude Include="Devider.h" />
+    <ClInclude Include="MultiThreadEngine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

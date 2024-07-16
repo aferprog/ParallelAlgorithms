@@ -12,14 +12,22 @@
 //	bool bNecessary = true;
 //};
 
-class MultyThreadEngine
-{
-	friend void work(MultyThreadEngine* mte);
+struct mte_thread {
+	std::thread thread;
+	std::atomic_bool is_ready = false;
+};
 
-	std::vector<std::thread> threads;
+using PoolOfThreads = std::vector<mte_thread>;
+
+
+class MultiThreadEngine
+{
+	friend void work(MultiThreadEngine* mte, mte_thread& thrd);
+
+	PoolOfThreads threads;
 	std::queue<std::function<void()>> tasks;
-	mutable std::recursive_mutex queue_mutex;
 	std::atomic_bool bShouldFinish = false, bShouldStop = false;
+	mutable std::recursive_mutex queue_mutex;
 	std::condition_variable_any cv;
 
 	mutable std::mutex wait_mutex;
@@ -33,7 +41,6 @@ public:
 	void stop();
 	void wait();
 	void addTask(std::function<void()> task);
-	MultyThreadEngine();
-	MultyThreadEngine(unsigned int threads_count);
-	~MultyThreadEngine();
+	explicit MultiThreadEngine(unsigned int threads_count);
+	~MultiThreadEngine();
 };

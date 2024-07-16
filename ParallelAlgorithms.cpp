@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <chrono>
 
 template<typename Func>
 double mesure_func(Func func){
@@ -19,15 +20,37 @@ double mesure_func(Func func){
 #define example 1
 
 #if example==1
-#include "MultyThreadEngine.h"
+#include "MultiThreadEngine.h"
+#include "Devider.h"
+
+void test() {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << i << '\n';
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
 
 int main() {
-    MultyThreadEngine mte(3);
+    MultiThreadEngine mte(2);
+
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+
+    mte.wait();
+    std::cout << "next pool" << std::endl;
+
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.stop();
+    std::cout << "finish" << std::endl;
 }
 
 #endif // example==1
 
-
+#if example == 2
 #include <fstream>
 #include "ParallelAlgorithms.h"
 
@@ -71,3 +94,5 @@ int main()
     pal::test_function(gen, test, check, 50, 2);
     
 }
+
+#endif
