@@ -96,7 +96,7 @@ mte.addTask(test);
 mte.wait();
 std::cout << "finish 1" << std::endl;
 ```
-Destructor
+#### Destructor
 The destructor of MultiThreadEngine waits until the queue of tasks is empty and then joins all threads to the main thread. So it's a thread-safe class. This program demonstrates how it works:
 ```cpp
 #include <iostream>
