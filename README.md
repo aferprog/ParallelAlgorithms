@@ -184,3 +184,54 @@ finish 1
 finish 21
  2 3 4
 ```
+## ParallelAlgorithms.h
+This file contains realizations of several basic algorithms in namespace pal. Currently all of them create their own threads to make parallel computations. 
+
+### pal::sort_by_parts
+Takes a random iterator to the begin and end of data and count of threads it's allowed to use. It divides the data into parts, sort them with std::sort and then merge them with std::inplace_merge.
+
+Example of usage:
+```cpp
+#include <iostream>
+#include <chrono>
+#include <fstream>
+#include "ParallelAlgorithms.h"
+
+template<typename Func>
+double mesure_func(Func func) {
+    puts("Now");
+    auto start = std::chrono::high_resolution_clock::now();
+    func();
+    auto end = std::chrono::high_resolution_clock::now();
+    auto t = end - start;
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Time taken to fill array: " << duration.count() << " seconds" << std::endl;
+    std::cout << std::endl;
+    return duration.count();
+}
+
+int main()
+{
+    size_t len = 10000000;
+    srand(time(NULL));
+    std::vector<int> arr(len), arr1(len);
+    for (int i = 0; i < len; i++)
+        arr[i] = arr1[i] = rand();
+
+    mesure_func([&arr]() {
+        pal::sort_by_parts(arr.begin(), arr.end(), 10);
+        });
+
+    mesure_func([&arr1]() {
+        std::sort(arr1.begin(), arr1.end());
+        });
+
+}
+```
+Output:
+```Now
+Time taken to fill array: 1.30108 seconds
+
+Now
+Time taken to fill array: 4.88208 seconds
+```
