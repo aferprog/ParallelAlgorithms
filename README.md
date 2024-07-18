@@ -43,9 +43,6 @@ int main() {
     mte.wait();
     std::cout << "\nfinish 2" << std::endl;
 }
-'''
-
-
 Output:
 '''
 0 01  21  23  34  40  1 2 3 4
