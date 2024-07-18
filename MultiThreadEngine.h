@@ -19,7 +19,6 @@ struct mte_thread {
 
 using PoolOfThreads = std::vector<mte_thread>;
 
-
 class MultiThreadEngine
 {
 	friend void work(MultiThreadEngine* mte, mte_thread& thrd);
@@ -42,5 +41,6 @@ public:
 	void wait();
 	void addTask(std::function<void()> task);
 	explicit MultiThreadEngine(unsigned int threads_count);
+	MultiThreadEngine(const MultiThreadEngine& other) = delete;
 	~MultiThreadEngine();
 };

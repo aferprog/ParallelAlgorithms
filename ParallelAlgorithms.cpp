@@ -1,11 +1,53 @@
 ﻿// ParallelAlgorithms.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
+#define example 1
+
+#if example==1
+#include <iostream>
+#include "MultiThreadEngine.h"
+
+//Example of task
+void test() {
+    for (int i = 0; i < 5; ++i) {
+        std::cout << i << ' ';
+    }
+}
+
+int main() {
+    // Creation of engine
+    MultiThreadEngine mte(2);
+
+    // Adding the task 3 times
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+
+    // waiting until all tasks are finished
+    mte.wait();
+    std::cout << "\nfinish 1" << std::endl;
+
+    // Adding the task 4 more times
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+    mte.addTask(test);
+
+    // Premature thread closing
+    mte.stop();
+    std::cout << "\nfinish 2" << std::endl;
+}
+
+#endif // example==1
+
+#if example == 2
 
 #include <iostream>
 #include <chrono>
+#include <fstream>
+#include "ParallelAlgorithms.h"
 
 template<typename Func>
-double mesure_func(Func func){
+double mesure_func(Func func) {
     puts("Now");
     auto start = std::chrono::high_resolution_clock::now();
     func();
@@ -16,43 +58,6 @@ double mesure_func(Func func){
     std::cout << std::endl;
     return duration.count();
 }
-
-#define example 1
-
-#if example==1
-#include "MultiThreadEngine.h"
-#include "Devider.h"
-
-void test() {
-    for (int i = 0; i < 5; ++i) {
-        std::cout << i << '\n';
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-}
-
-int main() {
-    MultiThreadEngine mte(2);
-
-    mte.addTask(test);
-    mte.addTask(test);
-    mte.addTask(test);
-
-    mte.wait();
-    std::cout << "next pool" << std::endl;
-
-    mte.addTask(test);
-    mte.addTask(test);
-    mte.addTask(test);
-    mte.addTask(test);
-    mte.stop();
-    std::cout << "finish" << std::endl;
-}
-
-#endif // example==1
-
-#if example == 2
-#include <fstream>
-#include "ParallelAlgorithms.h"
 
 struct Generator{
     int seed = 0;
@@ -91,8 +96,7 @@ int main()
         return arr;
     };
     Checker check;
-    pal::test_function(gen, test, check, 50, 2);
-    
+    pal::test_function(std::ref(gen), test, check, 50, 2);
 }
 
 #endif

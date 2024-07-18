@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <functional>
-#include "Devider.h"
+#include "Spliter.h"
 #include "MultiThreadEngine.h"
 
 #define MIN_SUBARRAY_SIZE 10000llu
