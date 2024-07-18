@@ -185,7 +185,7 @@ finish 21
  2 3 4
 ```
 ## ParallelAlgorithms.h
-This file contains realizations of several basic algorithms in namespace pal. Currently all of them create their own threads to make parallel computations. 
+This file contains in the namespace pal realizations of several basic algorithms. Currently all of them create their own threads to make parallel computations. 
 
 ### pal::sort_by_parts
 Takes a random iterator to the begin and end of data and count of threads it's allowed to use. It divides the data into parts, sort them with std::sort and then merge them with std::inplace_merge.
