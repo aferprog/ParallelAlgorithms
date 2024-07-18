@@ -1,12 +1,12 @@
-#ParallelAlgorithms
-##General idea
+# ParallelAlgorithms
+## General idea
 The goal of this repository is to present multi-thread solutions of several basic problems, providing some tools to simplify dividing huge problems to parts and do it with minimal resource consumption. 
 
-##Multi-thread engine
+## Multi-thread engine
 The main pearl of a repository is the MultiThreadEngine class. It's a tool which provides the capability to create a pool of threads in advance and use them when needed. Created threads are sleeping and waiting for tasks, so they consume a little resources. It allows you to avoid extra creations and utilisations of threads and save much resources on it.
 
-###Usage
-####Example of usage
+### Usage
+#### Example of usage
 
 Program:
 '''cpp
