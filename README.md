@@ -9,7 +9,7 @@ The main pearl of a repository is the MultiThreadEngine class. It's a tool which
 #### Example of usage
 
 Program:
-'''cpp
+```cpp
 #include <iostream>
 #include "MultiThreadEngine.h"
 
@@ -43,10 +43,11 @@ int main() {
     mte.wait();
     std::cout << "\nfinish 2" << std::endl;
 }
+```
 Output:
-'''
+```
 0 01  21  23  34  40  1 2 3 4
 finish 1
 0 1 0 2 13  24  3 04  10  21  32  3 44
 finish 2
-'''
+```
