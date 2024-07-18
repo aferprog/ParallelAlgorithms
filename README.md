@@ -235,3 +235,5 @@ Time taken to fill array: 1.30108 seconds
 Now
 Time taken to fill array: 4.88208 seconds
 ```
+### pal::make_by_pairs
+This takes a random iterator to the beginning and end of data, a function which takes two arguments, and a count of threads it's allowed to use. This function applies the taken function to each pair. If the count of elements is odd, the last element will be ignored. It is used in pal::sort_by_parts to perform merging.
